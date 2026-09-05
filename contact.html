@@ -44,7 +44,7 @@
           Questions, feedback or tool requests — we'd love to hear from you.
         </p>
         <!-- To make this form work, sign up free at formspree.io and replace YOUR_FORM_ID below -->
-        <form action="https://formspree.io/f/mwlknewy" method="POST">
+        <form id="contactForm" method="POST">
           <div class="row">
             <div>
               <label for="name">Name</label
@@ -63,6 +63,11 @@
             required
             style="width: 100%"
           ></textarea>
+          <div
+            class="form-status"
+            aria-live="polite"
+            style="margin-top: 12px; color: #1d4ed8"
+          ></div>
           <button class="btn" style="margin-top: 14px" type="submit">
             Send Message
           </button>
@@ -78,5 +83,6 @@
         </nav>
       </div>
     </footer>
+    <script defer src="assets/site.js"></script>
   </body>
 </html>
