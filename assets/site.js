@@ -190,30 +190,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (isPage("emi-calculator")) {
     attachCalcForm("emi-calculator", () => {
-      const P = +document.getElementById("p").value;
-      const rate = +document.getElementById("r").value;
-      const yrs = +document.getElementById("n").value;
+      const principal = Number(document.getElementById("p")?.value ?? 0);
+      const annualRate = Number(document.getElementById("r")?.value ?? 0);
+      const years = Number(document.getElementById("n")?.value ?? 0);
       const result = document.getElementById("r");
-      if (!P || !yrs) {
-        setResult(result, "<p>Please fill all fields.</p>");
+
+      if (
+        !Number.isFinite(principal) ||
+        principal <= 0 ||
+        !Number.isFinite(years) ||
+        years <= 0
+      ) {
+        setResult(result, "<p>Please enter valid loan details.</p>");
         return;
       }
-      const i = rate / 1200;
-      const n = yrs * 12;
-      const emi = i
-        ? (P * i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1)
-        : P / n;
-      const total = emi * n;
+
+      const monthlyRate = annualRate > 0 ? annualRate / 12 / 100 : 0;
+      const months = years * 12;
+      const emi =
+        monthlyRate > 0
+          ? (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+            (Math.pow(1 + monthlyRate, months) - 1)
+          : principal / months;
+      const totalPayment = emi * months;
+      const totalInterest = totalPayment - principal;
+
       setResult(
         result,
         '<div class="big">Monthly EMI: ₹' +
           Math.round(emi).toLocaleString("en-IN") +
           "</div><ul><li><span>Principal amount</span><b>₹" +
-          P.toLocaleString("en-IN") +
+          principal.toLocaleString("en-IN") +
           "</b></li><li><span>Total interest</span><b>₹" +
-          Math.round(total - P).toLocaleString("en-IN") +
+          Math.round(totalInterest).toLocaleString("en-IN") +
           "</b></li><li><span>Total payment</span><b>₹" +
-          Math.round(total).toLocaleString("en-IN") +
+          Math.round(totalPayment).toLocaleString("en-IN") +
           "</b></li></ul>",
       );
     });
@@ -347,28 +358,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (isPage("sip-calculator")) {
     attachCalcForm("sip-calculator", () => {
-      const P = +document.getElementById("p").value;
-      const rate = +document.getElementById("r").value;
-      const yrs = +document.getElementById("n").value;
+      const monthlyInvestment = Number(
+        document.getElementById("p")?.value ?? 0,
+      );
+      const annualRate = Number(document.getElementById("r")?.value ?? 0);
+      const years = Number(document.getElementById("n")?.value ?? 0);
       const result = document.getElementById("r");
-      if (!P || !yrs) {
-        setResult(result, "<p>Please fill all fields.</p>");
+
+      if (
+        !Number.isFinite(monthlyInvestment) ||
+        monthlyInvestment <= 0 ||
+        !Number.isFinite(years) ||
+        years <= 0
+      ) {
+        setResult(result, "<p>Please enter valid SIP details.</p>");
         return;
       }
-      const i = rate / 1200;
-      const n = yrs * 12;
-      const fv = i ? P * ((Math.pow(1 + i, n) - 1) / i) * (1 + i) : P * n;
-      const inv = P * n;
+
+      const monthlyRate = annualRate > 0 ? annualRate / 12 / 100 : 0;
+      const months = years * 12;
+      const futureValue =
+        monthlyRate > 0
+          ? monthlyInvestment *
+            (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) *
+              (1 + monthlyRate))
+          : monthlyInvestment * months;
+      const totalInvested = monthlyInvestment * months;
+      const wealthGained = futureValue - totalInvested;
+
       setResult(
         result,
         '<div class="big">Maturity: ₹' +
-          Math.round(fv).toLocaleString("en-IN") +
+          Math.round(futureValue).toLocaleString("en-IN") +
           "</div><ul><li><span>Total invested</span><b>₹" +
-          inv.toLocaleString("en-IN") +
+          totalInvested.toLocaleString("en-IN") +
           "</b></li><li><span>Wealth gained</span><b>₹" +
-          Math.round(fv - inv).toLocaleString("en-IN") +
+          Math.round(wealthGained).toLocaleString("en-IN") +
           "</b></li><li><span>Growth multiple</span><b>" +
-          (fv / inv).toFixed(2) +
+          (futureValue / totalInvested).toFixed(2) +
           "×</b></li></ul>",
       );
     });
