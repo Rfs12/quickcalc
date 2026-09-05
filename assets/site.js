@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const pathName = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
+  const currentPage = pathName.split("/").pop() || "index";
+  const isPage = (name) =>
+    currentPage === name || currentPage === `${name}.html`;
+
   const contactForm = document.getElementById("contactForm");
   if (contactForm) {
     contactForm.addEventListener("submit", async (event) => {
@@ -67,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  if (window.location.pathname.endsWith("age-calculator.html")) {
+  if (isPage("age-calculator")) {
     attachCalcForm("age-calculator", () => {
       const dob = new Date(document.getElementById("dob").value);
       const result = document.getElementById("r");
@@ -121,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (window.location.pathname.endsWith("bmi-calculator.html")) {
+  if (isPage("bmi-calculator")) {
     attachCalcForm("bmi-calculator", () => {
       const h = +document.getElementById("h").value / 100;
       const w = +document.getElementById("w").value;
@@ -157,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (window.location.pathname.endsWith("discount-calculator.html")) {
+  if (isPage("discount-calculator")) {
     attachCalcForm("discount-calculator", () => {
       const p = +document.getElementById("price").value;
       const d = +document.getElementById("d").value;
@@ -183,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (window.location.pathname.endsWith("emi-calculator.html")) {
+  if (isPage("emi-calculator")) {
     attachCalcForm("emi-calculator", () => {
       const P = +document.getElementById("p").value;
       const rate = +document.getElementById("r").value;
@@ -214,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (window.location.pathname.endsWith("gst-calculator.html")) {
+  if (isPage("gst-calculator")) {
     attachCalcForm("gst-calculator", () => {
       const a = +document.getElementById("amt").value;
       const rt = +document.getElementById("rate").value;
@@ -255,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (window.location.pathname.endsWith("password-generator.html")) {
+  if (isPage("password-generator")) {
     const len = document.getElementById("len");
     const result = document.getElementById("r");
     const charsMap = {
@@ -304,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
     generatePassword();
   }
 
-  if (window.location.pathname.endsWith("percentage-calculator.html")) {
+  if (isPage("percentage-calculator")) {
     attachCalcForm("percentage-calculator", () => {
       const a = +document.getElementById("a").value;
       const b = +document.getElementById("b").value;
@@ -340,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (window.location.pathname.endsWith("sip-calculator.html")) {
+  if (isPage("sip-calculator")) {
     attachCalcForm("sip-calculator", () => {
       const P = +document.getElementById("p").value;
       const rate = +document.getElementById("r").value;
@@ -369,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (window.location.pathname.endsWith("unit-converter.html")) {
+  if (isPage("unit-converter")) {
     const U = {
       length: {
         m: 1,
@@ -487,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  if (window.location.pathname.endsWith("word-counter.html")) {
+  if (isPage("word-counter")) {
     const textarea = document.getElementById("t");
     const result = document.getElementById("r");
     const calcWord = () => {
