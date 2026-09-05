@@ -66,10 +66,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const attachCalcForm = (tool, handler) => {
     const form = document.querySelector(`form[data-page="${tool}"]`);
     if (!form) return;
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      handler();
-    });
+
+    let isHandling = false;
+    const runHandler = (event) => {
+      if (event) event.preventDefault();
+      if (isHandling) return;
+      isHandling = true;
+
+      try {
+        if (form.checkValidity && !form.checkValidity()) {
+          form.reportValidity?.();
+          return;
+        }
+        handler();
+      } finally {
+        setTimeout(() => {
+          isHandling = false;
+        }, 0);
+      }
+    };
+
+    form.addEventListener("submit", runHandler);
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+      submitButton.addEventListener("click", (event) => {
+        if (!form.checkValidity || form.checkValidity()) {
+          runHandler(event);
+        }
+      });
+    }
   };
 
   if (isPage("age-calculator")) {
