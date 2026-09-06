@@ -219,9 +219,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const principal = Number(document.getElementById("p")?.value ?? 0);
       const annualRate = Number(document.getElementById("r")?.value ?? 0);
       const years = Number(document.getElementById("n")?.value ?? 0);
-      const result = document.querySelector(
-        'form[data-page="emi-calculator"] .result',
-      );
+      const _form = document.querySelector('form[data-page="emi-calculator"]');
+      const result = _form
+        ? _form.parentElement.querySelector(".result")
+        : document.getElementById("r");
 
       if (
         !Number.isFinite(principal) ||
@@ -391,9 +392,10 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       const annualRate = Number(document.getElementById("r")?.value ?? 0);
       const years = Number(document.getElementById("n")?.value ?? 0);
-      const result = document.querySelector(
-        'form[data-page="sip-calculator"] .result',
-      );
+      const _form = document.querySelector('form[data-page="sip-calculator"]');
+      const result = _form
+        ? _form.parentElement.querySelector(".result")
+        : document.getElementById("r");
 
       if (
         !Number.isFinite(monthlyInvestment) ||
