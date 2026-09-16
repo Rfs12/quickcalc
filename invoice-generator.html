@@ -112,24 +112,37 @@
         margin: 10px auto 0;
       }
       main.tool {
-        max-width: 760px;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 34px 18px 60px;
       }
       .toolcard {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+      }
+      .form-section {
         background: var(--card);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         padding: 26px;
       }
-      .toolcard h1 {
-        font-size: 1.55rem;
+      .form-section h1 {
+        font-size: 1.3rem;
         margin-bottom: 6px;
       }
-      .toolcard .sub {
+      .form-section .sub {
         color: var(--muted);
         font-size: 0.95rem;
         margin-bottom: 20px;
+      }
+      @media (max-width: 1024px) {
+        .toolcard {
+          grid-template-columns: 1fr;
+        }
       }
       .row {
         display: grid;
@@ -277,12 +290,13 @@
         }
       }
       .preview-area {
-        margin-top: 40px;
-        padding-top: 40px;
-        border-top: 2px solid #e5eaf2;
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 26px;
       }
       .preview-area h2 {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         margin-bottom: 20px;
         color: var(--ink);
       }
@@ -291,6 +305,8 @@
         padding: 40px;
         border-radius: var(--radius);
         border: 1px solid #e5eaf2;
+        page-break-after: avoid;
+        page-break-inside: avoid;
       }
       .invoice-header {
         display: flex;
@@ -421,38 +437,51 @@
       }
       @media print {
         body {
-          background: #fff;
+          background: #fff !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
         header.site {
-          display: none;
+          display: none !important;
         }
         .hero {
-          display: none;
+          display: none !important;
         }
         main.tool {
-          padding: 0;
-          max-width: 100%;
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
         }
         .toolcard {
-          box-shadow: none;
-          padding: 0;
-          background: transparent;
+          display: block !important;
+          grid-template-columns: none !important;
+          gap: 0 !important;
+          padding: 0 !important;
+        }
+        .form-section {
+          display: none !important;
         }
         .preview-area {
-          margin-top: 0;
-          padding-top: 0;
-          border-top: none;
+          background: transparent !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          border-radius: 0 !important;
         }
         .preview-area h2 {
-          display: none;
+          display: none !important;
         }
         #invoicePreview {
-          border: none;
-          padding: 0;
-          box-shadow: none;
+          border: none !important;
+          padding: 0 !important;
+          box-shadow: none !important;
+          page-break-after: avoid !important;
+          page-break-inside: avoid !important;
+          border-radius: 0 !important;
+          background: #fff !important;
         }
         .action-buttons {
-          display: none;
+          display: none !important;
         }
       }
     </style>
@@ -474,8 +503,9 @@
     </section>
     <main class="tool">
       <div class="toolcard">
-        <h1>Invoice Generator</h1>
-        <p class="sub">Create and customize professional invoices with multiple color themes</p>
+        <div class="form-section">
+          <h1>Invoice Generator</h1>
+          <p class="sub">Create and customize professional invoices with multiple color themes</p>
 
         <div class="theme-selector">
           <button
@@ -592,12 +622,11 @@
           </button>
           <button class="btn" id="printBtn">🖨️ Print</button>
         </div>
-      </div>
+        </div>
 
-      <!-- Preview Section -->
-      <div class="preview-area">
-        <h2>Invoice Preview</h2>
-        <div id="invoicePreview" class="color-blue">
+        <div class="preview-area">
+          <h2>Invoice Preview</h2>
+          <div id="invoicePreview" class="color-blue">
           <div class="invoice-header">
             <div class="invoice-logo">INVOICE</div>
             <div>
@@ -675,6 +704,7 @@
             ></div>
             <p>Thank you for your business!</p>
           </div>
+        </div>
         </div>
       </div>
     </main>
