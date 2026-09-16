@@ -350,12 +350,19 @@
         body {
           background: #fff;
         }
+        header.site {
+          display: none;
+        }
         .form-section {
           display: none;
         }
         .preview-section {
           box-shadow: none;
           padding: 0;
+          background: #fff;
+        }
+        .preview-section h2 {
+          display: none;
         }
         #invoicePreview {
           box-shadow: none;
@@ -428,13 +435,6 @@
         </nav>
       </div>
     </header>
-    <section class="hero">
-      <h1>Invoice Generator 📄</h1>
-      <p>
-        Create professional invoices instantly. Customize with your details,
-        choose a color theme, and download as HTML or print directly.
-      </p>
-    </section>
     <div class="invoice-container">
       <!-- Form Section -->
       <div class="form-section">
@@ -491,7 +491,12 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label>Due Date</label>
+            <l
+
+        <div class="form-group">
+          <label>Tax (%)</label>
+          <input type="number" id="taxRate" placeholder="0" value="0" min="0" step="0.01" />
+        </div>abel>Due Date</label>
             <input type="date" id="dueDate" />
           </div>
           <div class="form-group">
@@ -546,7 +551,7 @@
 
         <div class="action-buttons">
           <button class="btn btn-download" id="downloadBtn">
-            ⬇️ Download HTML
+            ⬇️ Download PDF
           </button>
           <button class="btn" id="printBtn">🖨️ Print</button>
         </div>
@@ -637,6 +642,7 @@
       </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
       // Set today's date and 30 days later as default
       const today = new Date();
@@ -675,44 +681,85 @@
         items.forEach((item, index) => {
           const itemDiv = document.createElement("div");
           itemDiv.className = "item-row";
-          itemDiv.innerHTML = `
-            <div class="form-group" style="margin: 0;">
-              <input 
-                type="text" 
-                placeholder="Item description" 
-                value="${item.description}"
-                onchange="items[${index}].description = this.value; updatePreview();"
-                style="margin: 0;"
-              />
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <input 
-                type="number" 
-                placeholder="Qty" 
-                value="${item.quantity}"
-                min="1"
-                onchange="items[${index}].quantity = parseFloat(this.value) || 0; updatePreview();"
-                style="margin: 0;"
-              />
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <input 
-                type="number" 
-                placeholder="Rate" 
-                value="${item.rate}"
-                min="0"
-                step="0.01"
-                onchange="items[${index}].rate = parseFloat(this.value) || 0; updatePreview();"
-                style="margin: 0;"
-              />
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <div style="padding: 10px 12px; background: #f0f0f0; border-radius: 8px;">
-                ${(item.quantity * item.rate).toFixed(2)}
-              </div>
-            </div>
-            <button class="btn btn-danger" onclick="items.splice(${index}, 1); renderItems(); updatePreview();">✕</button>
-          `;
+          
+          const descInput = document.createElement("input");
+          descInput.type = "text";
+          descInput.placeholder = "Item description";
+          descInput.value = item.description;
+          descInput.addEventListener("change", () => {
+            items[index].description = descInput.value;
+            updatePreview();
+          });
+          descInput.addEventListener("input", () => {
+            items[index].description = descInput.value;
+            updatePreview();
+          });
+
+          const qtyInput = document.createElement("input");
+          qtyInput.type = "number";
+          qtyInput.placeholder = "Qty";
+          qtyInput.value = item.quantity;
+          qtyInput.min = "0.01";
+          qtyInput.step = "0.01";
+          qtyInput.addEventListener("change", () => {
+            items[index].quantity = parseFloat(qtyInput.value) || 0;
+            updatePreview();
+          });
+          qtyInput.addEventListener("input", () => {
+            items[index].quantity = parseFloat(qtyInput.value) || 0;
+            updatePreview();
+          });
+
+          const rateInput = document.createElement("input");
+          rateInput.type = "number";
+          rateInput.placeholder = "Rate";
+          rateInput.value = item.rate;
+          rateInput.min = "0";
+          rateInput.step = "0.01";
+          rateInput.addEventListener("change", () => {
+            items[index].rate = parseFloat(rateInput.value) || 0;
+            updatePreview();
+          });
+          rateInput.addEventListener("input", () => {
+            items[index].rate = parseFloat(rateInput.value) || 0;
+            updatePreview();
+          });
+
+          const amountDiv = document.createElement("div");
+          amountDiv.className = "form-group";
+          amountDiv.style.margin = "0";
+          amountDiv.innerHTML = `<div style="padding: 10px 12px; background: #f0f0f0; border-radius: 8px; text-align: right; font-weight: 600;" id="amount-${index}">0.00</div>`;
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "btn btn-danger";
+          deleteBtn.textContent = "✕";
+          deleteBtn.addEventListener("click", () => {
+            items.splice(index, 1);
+            renderItems();
+            updatePreview();
+          });
+
+          const formGroup1 = document.createElement("div");
+          formGroup1.className = "form-group";
+          formGroup1.style.margin = "0";
+          formGroup1.appendChild(descInput);
+
+          const formGroup2 = document.createElement("div");
+          formGroup2.className = "form-group";
+          formGroup2.style.margin = "0";
+          formGroup2.appendChild(qtyInput);
+
+          const formGroup3 = document.createElement("div");
+          formGroup3.className = "form-group";
+          formGroup3.style.margin = "0";
+          formGroup3.appendChild(rateInput);
+
+          itemDiv.appendChild(formGroup1);
+          itemDiv.appendChild(formGroup2);
+          itemDiv.appendChild(formGroup3);
+          itemDiv.appendChild(amountDiv);
+          itemDiv.appendChild(deleteBtn);
+
           container.appendChild(itemDiv);
         });
       }
@@ -733,8 +780,13 @@
         "toDetails",
         "notes",
         "currency",
+        "taxRate",
       ].forEach((id) => {
-        document.getElementById(id).addEventListener("input", updatePreview);
+        const elem = document.getElementById(id);
+        if (elem) {
+          elem.addEventListener("input", updatePreview);
+          elem.addEventListener("change", updatePreview);
+        }
       });
 
       function updatePreview() {
@@ -757,7 +809,7 @@
         document.getElementById("previewNotes").textContent =
           document.getElementById("notes").value || "";
 
-        // Update items table
+        // Update items table and amounts display
         const tableBody = document.getElementById("previewItemsTable");
         if (items.length === 0) {
           tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #5b6b84; padding: 30px;">Add items to see them here</td></tr>`;
@@ -775,6 +827,14 @@
             )
             .join("");
         }
+
+        // Update amount display in form
+        items.forEach((item, index) => {
+          const amountDisplay = document.getElementById(`amount-${index}`);
+          if (amountDisplay) {
+            amountDisplay.textContent = (item.quantity * item.rate).toFixed(2);
+          }
+        });
 
         // Calculate totals
         const subtotal = items.reduce(
@@ -800,55 +860,17 @@
           `preview-section color-${currentTheme}`;
       }
 
-      // Download as HTML
+      // Download as PDF
       document.getElementById("downloadBtn").addEventListener("click", () => {
-        const invoice = document.getElementById("invoicePreview").outerHTML;
-        const html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invoice - ${document.getElementById("invoiceNumber").value}</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; color: #16213a; background: #f6f8fb; }
-    .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid; }
-    .invoice-logo { font-size: 1.8rem; font-weight: 800; }
-    .invoice-title { text-align: right; font-size: 2.2rem; font-weight: 700; margin-bottom: 10px; }
-    .invoice-details { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; font-size: 0.95rem; }
-    .invoice-details strong { display: block; margin-bottom: 8px; }
-    .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-    .invoice-table thead { border-bottom: 2px solid; }
-    .invoice-table th { padding: 12px 8px; text-align: left; font-weight: 600; }
-    .invoice-table td { padding: 12px 8px; border-bottom: 1px solid #f0f0f0; }
-    .invoice-table .text-right { text-align: right; }
-    .invoice-total { display: flex; justify-content: flex-end; margin-top: 20px; }
-    .total-box { width: 300px; border-top: 2px solid; border-bottom: 2px solid; padding: 16px; }
-    .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .total-amount { font-weight: 700; font-size: 1.2rem; display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 2px solid; }
-    .invoice-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5eaf2; text-align: center; font-size: 0.9rem; color: #5b6b84; }
-    .color-blue { --accent: #2563eb; }
-    .color-green { --accent: #10b981; }
-    .color-orange { --accent: #f59e0b; }
-    .color-purple { --accent: #8b5cf6; }
-    .invoice-header, .invoice-table thead, .total-box, .total-amount { color: var(--accent); border-color: var(--accent); }
-    @media print { body { background: #fff; } }
-  </style>
-</head>
-<body>
-  ${invoice}
-</body>
-</html>
-        `;
-
-        const blob = new Blob([html], { type: "text/html" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Invoice-${document.getElementById("invoiceNumber").value}-${new Date().toISOString().slice(0, 10)}.html`;
-        a.click();
-        URL.revokeObjectURL(url);
+        const element = document.getElementById("invoicePreview");
+        const opt = {
+          margin: 10,
+          filename: `Invoice-${document.getElementById("invoiceNumber").value}-${new Date().toISOString().slice(0, 10)}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { orientation: "portrait", unit: "mm", format: "a4" },
+        };
+        html2pdf().set(opt).from(element).save();
       });
 
       // Print
